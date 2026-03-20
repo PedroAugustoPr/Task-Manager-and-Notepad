@@ -1,0 +1,12 @@
+self.fr_dad = ctk.CTkFrame(
+            self,
+            width=1260,
+            height=700,
+            corner_radius=15,
+            border_width=2,
+            border_color="white",
+        )
+        self.fr_dad.grid(row=0, column=0)
+        self.fr_dad.grid_propagate(False)
+
+        self.fr_dad.grid_columnconfigure(0, weight=1)
