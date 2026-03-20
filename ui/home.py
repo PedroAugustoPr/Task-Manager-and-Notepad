@@ -8,17 +8,21 @@ class BaseFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(
             master,
-            width=1260,
+            width=1160,
             height=700,
             corner_radius=15,
             border_width=2,
-            border_color="white",
+            border_color="yellow",
         )
+        self.grid_propagate(False)
 
 
 class MyNotes(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
+        
+        self.grid_columnconfigure(0, weight=1)
+        self.configure(border_color='white')
 
         Sfr_notas = ctk.CTkScrollableFrame(
             self,
@@ -30,7 +34,7 @@ class MyNotes(BaseFrame):
             border_width=2,
             border_color="yellow",
         )
-        Sfr_notas.grid(row=0, column=0, pady=(8, 0), padx=(575, 0))
+        Sfr_notas.grid(row=0, column=0, pady=(8, 0), padx=(0, 7), sticky='ens')
         Sfr_notas.grid_columnconfigure(0, weight=1)
 
         search_bar = ctk.CTkEntry(
@@ -91,13 +95,12 @@ class HomePage(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.mynotes = MyNotes(self)
-        self.mynotes.grid(row=0, column=0)
-        self.mynotes.grid_propagate(False)
-        self.mynotes.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-        self.sidebar = SideBar(self)
-        self.sidebar.grid(row=0, column=0, sticky="nsw", pady=10, padx=(7, 0))
+        self.mynotes = MyNotes(self)
+        self.mynotes.grid(row=0, column=1, sticky='nsew', padx=10, pady=10)
 
 
 class App(ctk.CTk):
@@ -131,18 +134,20 @@ class App(ctk.CTk):
         self.pages = {"home": HomePage(self.container)}
 
         for page in self.pages:
-            self.pages[page].grid_columnconfigure(0, weight=1)
-            self.pages[page].grid_rowconfigure(0, weight=1)
-
-            self.pages[page].grid_propagate(False)
             self.pages[page].grid(row=0, column=0, sticky="nsew")
+
+        self.sidebar = SideBar(self)
+        self.sidebar.grid(row=0, column=0, sticky="nsw")
 
         self.change_page("home")
 
     def change_page(self, page_name):
-        page = self.pages[page_name]
         self.pages[page_name].tkraise()
-        page.sidebar.buttons[f'{page_name}_button'].configure(fg_color="orange")
+        
+        for button in self.sidebar.buttons.values():
+            button.configure(fg_color='transparent')
+        
+        self.sidebar.buttons[f'{page_name}_button'].configure(fg_color="orange")
 
 
 app = App()
