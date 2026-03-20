@@ -20,9 +20,9 @@ class BaseFrame(ctk.CTkFrame):
 class MyNotes(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
-        
+
         self.grid_columnconfigure(0, weight=1)
-        self.configure(border_color='white')
+        self.configure(border_color="white")
 
         Sfr_notas = ctk.CTkScrollableFrame(
             self,
@@ -34,7 +34,7 @@ class MyNotes(BaseFrame):
             border_width=2,
             border_color="yellow",
         )
-        Sfr_notas.grid(row=0, column=0, pady=(8, 0), padx=(0, 7), sticky='ens')
+        Sfr_notas.grid(row=0, column=0, pady=(8, 0), padx=(0, 7), sticky="ens")
         Sfr_notas.grid_columnconfigure(0, weight=1)
 
         search_bar = ctk.CTkEntry(
@@ -68,13 +68,6 @@ class SideBar(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_propagate(False)
 
-        self.buttons = {
-            "home_button": self.create_button("🏠︎", 0, 33),
-            "notes_button": self.create_button("📝", 1),
-            "tasks_button": self.create_button("📋", 2, 33),
-            "settings_button": self.create_button("⚙️", 3, 40),
-        }
-
     def create_button(self, text, row, font_size=30, command=None):
         btn = ctk.CTkButton(
             self,
@@ -100,7 +93,17 @@ class HomePage(BaseFrame):
         self.grid_rowconfigure(0, weight=1)
 
         self.mynotes = MyNotes(self)
-        self.mynotes.grid(row=0, column=1, sticky='nsew', padx=10, pady=10)
+        self.mynotes.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+
+
+class CreateNotes(BaseFrame):
+    def __init__(self, master):
+        super().__init__(master)
+
+        self.grid(row=0, column=0, sticky="nsew")
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
 
 class App(ctk.CTk):
@@ -131,7 +134,10 @@ class App(ctk.CTk):
         self.container.grid_columnconfigure(0, weight=1)
         self.container.grid_rowconfigure(0, weight=1)
 
-        self.pages = {"home": HomePage(self.container)}
+        self.pages = {
+            "home": HomePage(self.container),
+            "notes": CreateNotes(self.container),
+        }
 
         for page in self.pages:
             self.pages[page].grid(row=0, column=0, sticky="nsew")
@@ -139,15 +145,22 @@ class App(ctk.CTk):
         self.sidebar = SideBar(self)
         self.sidebar.grid(row=0, column=0, sticky="nsw")
 
+        self.buttons = {
+            "home_button": self.sidebar.create_button("🏠︎", 0, 33, command=lambda: self.change_page('home')),
+            "notes_button": self.sidebar.create_button("📝", 1, command=lambda: self.change_page('notes')),
+            "tasks_button": self.sidebar.create_button("📋", 2, 33),
+            "settings_button": self.sidebar.create_button("⚙️", 3, 40),
+        }
+
         self.change_page("home")
 
     def change_page(self, page_name):
         self.pages[page_name].tkraise()
-        
-        for button in self.sidebar.buttons.values():
-            button.configure(fg_color='transparent')
-        
-        self.sidebar.buttons[f'{page_name}_button'].configure(fg_color="orange")
+
+        for button in self.buttons.values():
+            button.configure(fg_color="transparent")
+
+        self.buttons[f"{page_name}_button"].configure(fg_color="orange")
 
 
 app = App()
