@@ -8,6 +8,7 @@ class Database:
             cur.execute(
                 """
                 CREATE TABLE IF NOT EXISTS notes (
+                name TEXT NOT NULL,
                 content TEXT,
                 font TEXT,
                 size INTEGER
@@ -19,8 +20,8 @@ class Database:
         with sql.connect("notas.db") as conn:
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO notes (content, font, size) VALUES (?, ?, ?)",
-                (note["texto"], note["fonte"], note['tamanho']),
+                "INSERT INTO notes (name, content, font, size) VALUES (?, ?, ?, ?)",
+                (note["nome"], note["texto"], note["fonte"], note['tamanho']),
             )
             conn.commit()
 

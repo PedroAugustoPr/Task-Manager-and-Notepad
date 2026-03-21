@@ -115,27 +115,94 @@ class CreateNotes(BaseFrame):
             text="Criar Nota",
             fg_color="orange",
             hover_color="yellow",
-            command=lambda: self.notepad(),
+            command=lambda: self.note_name(),
         )
         self.btn.grid(row=0, column=0)
 
-    def notepad(self):
-        self.btn.destroy()
-
-        self.write = ctk.CTkTextbox(
+    def note_name(self):
+        self.camp = ctk.CTkFrame(
             self,
+            width=500,
+            height=150,
+            fg_color="transparent",
+            border_width=2,
+            border_color="yellow",
+            corner_radius=15,
+        )
+        self.camp.grid(row=0, column=0)
+        self.camp.grid_propagate(False)
+
+        for row in range(1):
+            self.camp.grid_rowconfigure(row, weight=1)
+
+        self.camp.grid_columnconfigure(0, weight=1)
+
+        self.name = ctk.CTkEntry(
+            self.camp, width=480, height=50, placeholder_text="Nome do Arquivo"
+        )
+        self.name.grid(row=0, column=0)
+
+        self.cancel = ctk.CTkButton(
+            self.camp,
+            width=235,
+            height=50,
+            text="Cancelar",
+            fg_color="red",
+            font=("Arial", 20, "bold"),
+            hover_color="yellow",
+            command=lambda: self.camp.grid_remove()
+        )
+        self.cancel.grid(row=1, column=0, sticky="ws", pady=15, padx=10)
+
+        self.proceed = ctk.CTkButton(
+            self.camp,
+            width=235,
+            height=50,
+            text="Prosseguir",
+            fg_color="orange",
+            font=("Arial", 20, "bold"),
+            hover_color="yellow",
+            command=lambda: self.notepad(),
+        )
+        self.proceed.grid(row=1, column=0, sticky="es", pady=15, padx=10)
+
+    def notepad(self):
+        self.btn.grid_remove()
+
+        # FRAME RESPONSÁVEL POR ARMAZENAR TODOS OS WIDGETS ABAIXO
+        self.editor = ctk.CTkFrame(
+            self,
+            width=1160,
+            height=700,
+            corner_radius=15,
+            border_width=2,
+            border_color="yellow",
+            fg_color="transparent",
+        )
+        self.editor.grid_propagate(False)
+
+        self.editor.grid(row=0, column=0, sticky="nsew")
+        self.editor.configure(border_color="white")
+
+        self.editor.grid_columnconfigure(0, weight=1)
+        self.editor.grid_rowconfigure(0, weight=1)
+
+        # CAIXA DE TEXTO ONDE O USUÁRIO ESCREVERÁ AS SUAS ANOTAÇÕES
+        self.write = ctk.CTkTextbox(
+            self.editor,
             width=1140,
             height=600,
             corner_radius=15,
             activate_scrollbars=True,
             scrollbar_button_color="orange",
             scrollbar_button_hover_color="yellow",
-            font=("Arial", 15),
+            font=("Arial", 14),
         )
         x = self.write.grid(row=0, column=0, padx=(85, 0))
 
+        # BUTTONS : LIMPAR A CAIXA DE TEXTO POR COMPLETO
         self.clear_btn = ctk.CTkButton(
-            self,
+            self.editor,
             width=80,
             height=30,
             text="Clear 🗑️",
@@ -145,8 +212,9 @@ class CreateNotes(BaseFrame):
         )
         self.clear_btn.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 110))
 
+        # BUTTONS : SALVAR A NOTA E VOLTAR PARA A ARÉA ANTERIOR
         self.save = ctk.CTkButton(
-            self,
+            self.editor,
             width=80,
             height=30,
             text="Salvar 📃",
@@ -159,11 +227,57 @@ class CreateNotes(BaseFrame):
         def save():
             font = self.write.cget("font")
             note = {
+                "nome": None,
                 "texto": self.write.get("1.0", "end-1c"),
                 "fonte": str(font[0]),
-                "tamanho": int(font[1])
+                "tamanho": int(font[1]),
             }
             db.save_note(note)
+
+            self.editor.grid_remove()
+            self.btn.grid()
+
+        # BUTTONS : MODIFICAR A FONTE E O TAMANHO
+        def change_font_size(value):
+            self.write.configure(font=(str(font[0]), int(value)))
+
+        global font
+        font = self.write.cget("font")
+
+        self.select_size = ctk.CTkOptionMenu(
+            self.editor,
+            width=80,
+            height=30,
+            values=[
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "14",
+                "16",
+                "18",
+                "20",
+                "22",
+                "24",
+                "26",
+                "28",
+                "32",
+                "36",
+                "40",
+                "48",
+                "56",
+                "64",
+                "72",
+            ],
+            fg_color="#3a2f00",
+            button_color="#ffb300",
+            button_hover_color="#ffc107",
+            text_color="white",
+            command=change_font_size,
+        )
+        self.select_size.set("14")
+        self.select_size.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 200))
 
 
 class App(ctk.CTk):
