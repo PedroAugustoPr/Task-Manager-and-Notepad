@@ -154,6 +154,20 @@ class CreateNotes(BaseFrame):
         )
         self.cancel.grid(row=1, column=0, sticky="ws", pady=15, padx=10)
 
+        def check_name():
+            global name_of_note
+            name_of_note = (self.name.get()).strip()
+
+            if not name_of_note:
+                notes = db.view_all_notes()
+                q_notes = len(notes)
+                name_of_note = f'Nota #{q_notes + 1}'
+            
+            self.camp.grid_remove()
+            self.notepad()
+
+            return name_of_note
+
         self.proceed = ctk.CTkButton(
             self.camp,
             width=235,
@@ -162,7 +176,7 @@ class CreateNotes(BaseFrame):
             fg_color="orange",
             font=("Arial", 20, "bold"),
             hover_color="yellow",
-            command=lambda: self.notepad(),
+            command=lambda: check_name(),
         )
         self.proceed.grid(row=1, column=0, sticky="es", pady=15, padx=10)
 
@@ -227,7 +241,7 @@ class CreateNotes(BaseFrame):
         def save():
             font = self.write.cget("font")
             note = {
-                "nome": None,
+                "nome": name_of_note,
                 "texto": self.write.get("1.0", "end-1c"),
                 "fonte": str(font[0]),
                 "tamanho": int(font[1]),

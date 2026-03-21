@@ -15,6 +15,13 @@ class Database:
             )
             """
             )
+    
+    def view_all_notes(self):
+        with sql.connect('notas.db') as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM notes")
+            notes = cur.fetchall()
+            return notes
 
     def save_note(self, note):
         with sql.connect("notas.db") as conn:
