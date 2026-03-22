@@ -56,7 +56,7 @@ class MyTasks(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(
             master,
-            width=565,
+            width=580,
             height=650,
             corner_radius=15,
             border_width=2,
@@ -68,8 +68,14 @@ class MyTasks(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.configure(border_color="white")
 
-        name_text = ctk.CTkLabel(self, width=550, height=60, text='Notas', font=('Arial', 35, 'bold'))
-        name_text.grid(row=0, column=0, sticky='n', pady=(7, 0))
+        name_text = ctk.CTkLabel(
+            self,
+            width=540,
+            height=60,
+            text="Tarefas",
+            font=("Arial", 35, "bold"),
+        )
+        name_text.grid(row=0, column=0, sticky="n", pady=(7, 0))
 
         Sfr_tasks = ctk.CTkScrollableFrame(
             self,
@@ -78,30 +84,38 @@ class MyTasks(ctk.CTkFrame):
             corner_radius=15,
             scrollbar_fg_color="transparent",
             fg_color="#373737",
+            scrollbar_button_color="orange",
+            scrollbar_button_hover_color="yellow",
         )
         Sfr_tasks.grid(row=0, column=0, pady=(122, 0), sticky="s")
         Sfr_tasks.grid_columnconfigure(0, weight=1)
 
         search_bar = ctk.CTkEntry(
             self,
-            width=475,
+            width=490,
             height=40,
             placeholder_text="Pesquisar",
             corner_radius=15,
         )
-        search_bar.grid(row=0, column=0, sticky='n', pady=70, padx=(30, 0))
+        search_bar.grid(row=0, column=0, sticky="n", pady=70, padx=(45, 0))
 
         search_symbol = ctk.CTkLabel(
-            self, width=30, height=30, text="🔍️", font=("Arial", 30)
+            self,
+            width=40,
+            height=40,
+            text="🔍️",
+            font=("Arial", 25),
+            fg_color="orange",
+            corner_radius=5,
         )
-        search_symbol.grid(row=0, column=0, sticky='nw', pady=73, padx=(20, 0))
+        search_symbol.grid(row=0, column=0, sticky="nw", pady=70, padx=(20, 0))
 
 
 class MyNotes(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(
             master,
-            width=565,
+            width=580,
             height=650,
             corner_radius=15,
             border_width=2,
@@ -113,8 +127,14 @@ class MyNotes(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.configure(border_color="white")
 
-        name_text = ctk.CTkLabel(self, width=550, height=60, text='Tarefas', font=('Arial', 35, 'bold'))
-        name_text.grid(row=0, column=0, sticky='n', pady=(7, 0))
+        name_text = ctk.CTkLabel(
+            self,
+            width=550,
+            height=60,
+            text="Notas",
+            font=("Arial", 35, "bold"),
+        )
+        name_text.grid(row=0, column=0, sticky="n", pady=(7, 0))
 
         Sfr_notes = ctk.CTkScrollableFrame(
             self,
@@ -123,38 +143,178 @@ class MyNotes(ctk.CTkFrame):
             corner_radius=15,
             scrollbar_fg_color="transparent",
             fg_color="#373737",
+            scrollbar_button_color="orange",
+            scrollbar_button_hover_color="yellow",
         )
         Sfr_notes.grid(row=0, column=0, pady=(122, 0), sticky="s")
         Sfr_notes.grid_columnconfigure(0, weight=1)
+        Sfr_notes.grid_rowconfigure(0, weight=1)
 
         search_bar = ctk.CTkEntry(
             self,
-            width=475,
+            width=490,
             height=40,
             placeholder_text="Pesquisar",
             corner_radius=15,
         )
-        search_bar.grid(row=0, column=0, sticky='n', pady=70, padx=(30, 0))
+        search_bar.grid(row=0, column=0, sticky="n", pady=70, padx=(45, 0))
 
         search_symbol = ctk.CTkLabel(
-            self, width=30, height=30, text="🔍️", font=("Arial", 30)
+            self,
+            width=40,
+            height=40,
+            text="🔍️",
+            font=("Arial", 25),
+            fg_color="orange",
+            corner_radius=5,
         )
-        search_symbol.grid(row=0, column=0, sticky='nw', pady=73, padx=(20, 0))
+        search_symbol.grid(row=0, column=0, sticky="nw", pady=70, padx=(20, 0))
+
+        # PUXA TODAS AS NOTAS JÁ REGISTRADAS NO BANCO DE DADOS EM FORMA DE LISTA (CADA INDEX É UMA NOTA, E CADA NOTA ESTÁ DENTRO DE UMA TUPLA)
+        notes = db.notes()
+        row = 0
+
+        self.viewer = ctk.CTkFrame(
+                master,
+                width=600,
+                height=700,
+                corner_radius=15,
+                border_width=2,
+                border_color="white",
+                fg_color="transparent",
+            )
+        self.viewer.grid_propagate(False)
+        self.viewer.grid_columnconfigure(0, weight=1)
+        self.viewer.grid_rowconfigure(0, weight=1)
+
+        self.x_btn = ctk.CTkButton(
+            self.viewer,
+            width=40,
+            height=40,
+            fg_color="red",
+            text="X",
+            font=("Arial", 17, "bold"),
+            hover_color="#9C0000",
+            command=lambda: self.viewer.grid_remove(),
+        )
+        self.x_btn.grid(row=0, column=0, sticky="ne", pady=10, padx=10)
+
+        self.note_n = ctk.CTkLabel(
+            self.viewer,
+            width=100,
+            height=30,
+            font=("Arial", 20, "bold"),
+        )
+        self.note_n.grid(row=0, column=0, sticky="nw", pady=20, padx=20)
+
+        self.content = ctk.CTkTextbox(
+            self.viewer,
+            width=560,
+            height=630,
+            state="normal",
+            corner_radius=15,
+        )
+        self.content.grid(row=0, column=0, pady=(43, 0))
+
+        for note in notes:
+            name = (note[1]).lower()
+            data, time = (note[5]).split(" ")
+            fonte = note[3]
+            ID = note[0]
+
+            row += 1
+
+            note_fr = ctk.CTkFrame(
+                Sfr_notes,
+                width=500,
+                height=130,
+                fg_color="transparent",
+                corner_radius=15,
+                border_width=2,
+                border_color="orange",
+            )
+            note_fr.grid(row=row, column=0, pady=5, padx=(0, 10))
+
+            note_fr.grid_propagate(False)
+            note_fr.grid_columnconfigure(0, weight=1)
+            note_fr.grid_rowconfigure(0, weight=1)
+
+            def view(nota):
+                name = (nota[1]).lower()
+
+                self.content.configure(state="normal")
+                self.note_n.configure(text=f"NOME: {(name[0:35]).title()}",)
+                self.content.delete("1.0", "end")
+                self.content.insert("1.0", nota[2])
+                self.content.configure(state="disabled", font=(nota[3], nota[4]),)
+                self.viewer.grid(row=0, column=0, sticky="nsew", padx=(107, 4), pady=10)
+
+            note_name = ctk.CTkLabel(
+                note_fr,
+                width=100,
+                height=30,
+                text=f"NOME: {(name[0:35]).title()}",
+                font=("Arial", 20, "bold"),
+            )
+            note_name.grid(row=0, column=0, sticky="nw", pady=10, padx=10)
+
+            info = ctk.CTkLabel(
+                note_fr,
+                width=100,
+                height=30,
+                text=f'ID: {ID} | FONTE: "{fonte}" | DATA DA CRIAÇÃO: {data} ás {time}',
+                font=("Arial", 14, "bold"),
+            )
+            info.grid(row=0, column=0, sticky="w", padx=10, pady=(0, 25))
+
+            view_btn = ctk.CTkButton(
+                note_fr,
+                width=215,
+                height=45,
+                text="Visualizar",
+                fg_color="blue",
+                font=("Arial", 20, "bold"),
+                hover_color="yellow",
+                command=lambda n=note: view(n),
+            )
+            view_btn.grid(row=0, column=0, sticky="sw", pady=10, padx=7)
+
+            edit_btn = ctk.CTkButton(
+                note_fr,
+                width=215,
+                height=45,
+                text="Editar",
+                fg_color="orange",
+                font=("Arial", 20, "bold"),
+                hover_color="yellow",
+            )
+            edit_btn.grid(row=0, column=0, sticky="se", pady=10, padx=57)
+
+            delete_btn = ctk.CTkButton(
+                note_fr,
+                width=45,
+                height=45,
+                text="🗑️",
+                fg_color="red",
+                font=("Arial", 20, "bold"),
+                hover_color="#9C0000",
+            )
+            delete_btn.grid(row=0, column=0, sticky="se", pady=10, padx=7)
 
 
 class HomePage(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
-        
+
         for column in range(1):
             self.grid_columnconfigure(column, weight=1)
         self.grid_rowconfigure(0, weight=1)
-        
+
         self.mytasks = MyTasks(self)
-        self.mytasks.grid(row=0, column=0, sticky="nsw", padx=(120, 0), pady=10)
+        self.mytasks.grid(row=0, column=0, sticky="nsw", padx=(107, 0), pady=10)
 
         self.mynotes = MyNotes(self)
-        self.mynotes.grid(row=0, column=1, sticky="ens", padx=20, pady=10)
+        self.mynotes.grid(row=0, column=1, sticky="ens", padx=(0, 8), pady=10)
 
 
 class CreateNotes(BaseFrame):
@@ -224,7 +384,7 @@ class CreateNotes(BaseFrame):
 
             # SE A CONDIÇÃO FOR VERDADEIRA, RETORNA UM NOME ENUMERADO SEQUENCIALMENTE DE ACORDO COM A QUANTIDADE DE NOTAS JÁ CRIADAS PELO USUÁRIO
             if not name_of_note:
-                notes = db.view_all_notes()
+                notes = db.notes()
                 q_notes = len(notes)
                 name_of_note = f"Nota #{q_notes + 1}"
 
@@ -287,7 +447,7 @@ class CreateNotes(BaseFrame):
             height=30,
             text="Clear 🗑️",
             fg_color="red",
-            hover_color="orange",
+            hover_color="#9C0000",
             command=lambda: self.write.delete("1.0", "end"),
         )
         self.clear_btn.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 110))

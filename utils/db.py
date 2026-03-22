@@ -22,7 +22,7 @@ class Database:
             """
             )
 
-    def view_all_notes(self):
+    def notes(self):
         with sql.connect(DB_PATH) as conn:
             cur = conn.cursor()
             cur.execute("SELECT * FROM notes")
