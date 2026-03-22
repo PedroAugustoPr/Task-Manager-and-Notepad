@@ -20,41 +20,6 @@ class BaseFrame(ctk.CTkFrame):
         self.grid_propagate(False)
 
 
-class MyNotes(BaseFrame):
-    def __init__(self, master):
-        super().__init__(master)
-
-        self.grid_columnconfigure(0, weight=1)
-        self.configure(border_color="white")
-
-        Sfr_notas = ctk.CTkScrollableFrame(
-            self,
-            width=630,
-            height=650,
-            corner_radius=15,
-            scrollbar_fg_color="transparent",
-            fg_color="transparent",
-            border_width=2,
-            border_color="yellow",
-        )
-        Sfr_notas.grid(row=0, column=0, pady=(8, 0), padx=(0, 7), sticky="ens")
-        Sfr_notas.grid_columnconfigure(0, weight=1)
-
-        search_bar = ctk.CTkEntry(
-            Sfr_notas,
-            width=580,
-            height=40,
-            placeholder_text="Pesquisar",
-            corner_radius=15,
-        )
-        search_bar.grid(row=0, column=0, pady=(0, 280), padx=(30, 0))
-
-        s_search = ctk.CTkLabel(
-            Sfr_notas, width=30, height=30, text="🔍️", font=("Arial", 30)
-        )
-        s_search.grid(row=0, column=0, pady=(0, 278), padx=(0, 600))
-
-
 class SideBar(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(
@@ -87,16 +52,109 @@ class SideBar(ctk.CTkFrame):
         return btn
 
 
+class MyTasks(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(
+            master,
+            width=565,
+            height=650,
+            corner_radius=15,
+            border_width=2,
+            border_color="yellow",
+            fg_color="transparent",
+        )
+        self.grid_propagate(False)
+
+        self.grid_columnconfigure(0, weight=1)
+        self.configure(border_color="white")
+
+        name_text = ctk.CTkLabel(self, width=550, height=60, text='Notas', font=('Arial', 35, 'bold'))
+        name_text.grid(row=0, column=0, sticky='n', pady=(7, 0))
+
+        Sfr_tasks = ctk.CTkScrollableFrame(
+            self,
+            width=510,
+            height=535,
+            corner_radius=15,
+            scrollbar_fg_color="transparent",
+            fg_color="#373737",
+        )
+        Sfr_tasks.grid(row=0, column=0, pady=(122, 0), sticky="s")
+        Sfr_tasks.grid_columnconfigure(0, weight=1)
+
+        search_bar = ctk.CTkEntry(
+            self,
+            width=475,
+            height=40,
+            placeholder_text="Pesquisar",
+            corner_radius=15,
+        )
+        search_bar.grid(row=0, column=0, sticky='n', pady=70, padx=(30, 0))
+
+        search_symbol = ctk.CTkLabel(
+            self, width=30, height=30, text="🔍️", font=("Arial", 30)
+        )
+        search_symbol.grid(row=0, column=0, sticky='nw', pady=73, padx=(20, 0))
+
+
+class MyNotes(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(
+            master,
+            width=565,
+            height=650,
+            corner_radius=15,
+            border_width=2,
+            border_color="yellow",
+            fg_color="transparent",
+        )
+        self.grid_propagate(False)
+
+        self.grid_columnconfigure(0, weight=1)
+        self.configure(border_color="white")
+
+        name_text = ctk.CTkLabel(self, width=550, height=60, text='Tarefas', font=('Arial', 35, 'bold'))
+        name_text.grid(row=0, column=0, sticky='n', pady=(7, 0))
+
+        Sfr_notes = ctk.CTkScrollableFrame(
+            self,
+            width=510,
+            height=535,
+            corner_radius=15,
+            scrollbar_fg_color="transparent",
+            fg_color="#373737",
+        )
+        Sfr_notes.grid(row=0, column=0, pady=(122, 0), sticky="s")
+        Sfr_notes.grid_columnconfigure(0, weight=1)
+
+        search_bar = ctk.CTkEntry(
+            self,
+            width=475,
+            height=40,
+            placeholder_text="Pesquisar",
+            corner_radius=15,
+        )
+        search_bar.grid(row=0, column=0, sticky='n', pady=70, padx=(30, 0))
+
+        search_symbol = ctk.CTkLabel(
+            self, width=30, height=30, text="🔍️", font=("Arial", 30)
+        )
+        search_symbol.grid(row=0, column=0, sticky='nw', pady=73, padx=(20, 0))
+
+
 class HomePage(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
-
-        self.grid_columnconfigure(0, weight=0)
-        self.grid_columnconfigure(1, weight=1)
+        
+        for column in range(1):
+            self.grid_columnconfigure(column, weight=1)
         self.grid_rowconfigure(0, weight=1)
+        
+        self.mytasks = MyTasks(self)
+        self.mytasks.grid(row=0, column=0, sticky="nsw", padx=(120, 0), pady=10)
 
         self.mynotes = MyNotes(self)
-        self.mynotes.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+        self.mynotes.grid(row=0, column=1, sticky="ens", padx=20, pady=10)
 
 
 class CreateNotes(BaseFrame):
@@ -235,7 +293,7 @@ class CreateNotes(BaseFrame):
         self.clear_btn.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 110))
 
         # BUTTONS : SALVAR A NOTA E VOLTAR PARA A ARÉA ANTERIOR
-        self.save = ctk.CTkButton(
+        self.save_btn = ctk.CTkButton(
             self.editor,
             width=80,
             height=30,
@@ -244,7 +302,7 @@ class CreateNotes(BaseFrame):
             hover_color="orange",
             command=lambda: save(),
         )
-        self.save.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 20))
+        self.save_btn.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 20))
 
         # FUNCTIONS : SALVAR A NOTA CRIADA PELO USUÁRIO NO BANCO DE DADOS
         def save():
@@ -253,7 +311,7 @@ class CreateNotes(BaseFrame):
             data_time = now.strftime("%d/%m/%Y %H:%M")
 
             font = self.write.cget("font")
-            
+
             note = {
                 "nome": name_of_note,
                 "texto": self.write.get("1.0", "end-1c"),
@@ -360,7 +418,7 @@ class App(ctk.CTk):
             "settings_button": self.sidebar.create_button("⚙️", 3, 40),
         }
 
-        self.change_page("notes")
+        self.change_page("home")
 
     def change_page(self, page_name):
         self.pages[page_name].tkraise()
