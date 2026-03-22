@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from utils.db import *
+from datetime import datetime
 
 
 ctk.set_appearance_mode("dark")
@@ -108,6 +109,7 @@ class CreateNotes(BaseFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+        # BUTTONS : BOTÃO RESPONSÁVEL POR INICIALIZAR O PROCESSO DE CRIAÇÃO DE UMA NOVA NOTA
         self.btn = ctk.CTkButton(
             self,
             width=100,
@@ -120,6 +122,7 @@ class CreateNotes(BaseFrame):
         self.btn.grid(row=0, column=0)
 
     def note_name(self):
+        # FRAMES : FRAME ONDE SERÁ PERGUNTADO O NOME DA NOTA
         self.camp = ctk.CTkFrame(
             self,
             width=500,
@@ -137,11 +140,13 @@ class CreateNotes(BaseFrame):
 
         self.camp.grid_columnconfigure(0, weight=1)
 
+        # ENTRADA DE TEXTO ONDE O USUÁRIO DEVE INSERIR O NOME DA NOVA NOTA
         self.name = ctk.CTkEntry(
             self.camp, width=480, height=50, placeholder_text="Nome do Arquivo"
         )
         self.name.grid(row=0, column=0)
 
+        # BUTTONS : CANCELA A CRIAÇÃO DE UMA NOVA NOTA E VOLTA PARA A "TELA" ANTERIOR
         self.cancel = ctk.CTkButton(
             self.camp,
             width=235,
@@ -150,24 +155,27 @@ class CreateNotes(BaseFrame):
             fg_color="red",
             font=("Arial", 20, "bold"),
             hover_color="yellow",
-            command=lambda: self.camp.grid_remove()
+            command=lambda: self.camp.grid_remove(),
         )
         self.cancel.grid(row=1, column=0, sticky="ws", pady=15, padx=10)
 
+        # FUNCTIONS : VERIFICA SE O USUÁRIO DIGITOU O NOME DA NOTA OU NÃO
         def check_name():
             global name_of_note
             name_of_note = (self.name.get()).strip()
 
+            # SE A CONDIÇÃO FOR VERDADEIRA, RETORNA UM NOME ENUMERADO SEQUENCIALMENTE DE ACORDO COM A QUANTIDADE DE NOTAS JÁ CRIADAS PELO USUÁRIO
             if not name_of_note:
                 notes = db.view_all_notes()
                 q_notes = len(notes)
-                name_of_note = f'Nota #{q_notes + 1}'
-            
+                name_of_note = f"Nota #{q_notes + 1}"
+
             self.camp.grid_remove()
             self.notepad()
 
             return name_of_note
 
+        # BUTTONS : PROSSEGUIR PARA A FUNÇÃO NOTEPAD?
         self.proceed = ctk.CTkButton(
             self.camp,
             width=235,
@@ -183,7 +191,7 @@ class CreateNotes(BaseFrame):
     def notepad(self):
         self.btn.grid_remove()
 
-        # FRAME RESPONSÁVEL POR ARMAZENAR TODOS OS WIDGETS ABAIXO
+        # FRAMES : FRAME RESPONSÁVEL POR ARMAZENAR TODOS OS WIDGETS ABAIXO
         self.editor = ctk.CTkFrame(
             self,
             width=1160,
@@ -212,7 +220,7 @@ class CreateNotes(BaseFrame):
             scrollbar_button_hover_color="yellow",
             font=("Arial", 14),
         )
-        x = self.write.grid(row=0, column=0, padx=(85, 0))
+        self.write.grid(row=0, column=0, padx=(85, 0))
 
         # BUTTONS : LIMPAR A CAIXA DE TEXTO POR COMPLETO
         self.clear_btn = ctk.CTkButton(
@@ -238,13 +246,20 @@ class CreateNotes(BaseFrame):
         )
         self.save.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 20))
 
+        # FUNCTIONS : SALVAR A NOTA CRIADA PELO USUÁRIO NO BANCO DE DADOS
         def save():
+            # PEGA A DATA E O HORÁRIO ATUAL E ARMAZENA COMO STRING
+            now = datetime.now()
+            data_time = now.strftime("%d/%m/%Y %H:%M")
+
             font = self.write.cget("font")
+            
             note = {
                 "nome": name_of_note,
                 "texto": self.write.get("1.0", "end-1c"),
                 "fonte": str(font[0]),
                 "tamanho": int(font[1]),
+                "data": data_time,
             }
             db.save_note(note)
 
@@ -258,6 +273,7 @@ class CreateNotes(BaseFrame):
         global font
         font = self.write.cget("font")
 
+        # MENU RESPONSÁVEL POR PROVER A SELEÇÃO DO TAMANHO DA FONTE
         self.select_size = ctk.CTkOptionMenu(
             self.editor,
             width=80,
