@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from utils.db import *
 from datetime import datetime
+from typing import cast
 
 
 ctk.set_appearance_mode("dark")
@@ -136,7 +137,7 @@ class MyNotes(ctk.CTkFrame):
         )
         name_text.grid(row=0, column=0, sticky="n", pady=(7, 0))
 
-        Sfr_notes = ctk.CTkScrollableFrame(
+        self.Sfr_notes = ctk.CTkScrollableFrame(
             self,
             width=510,
             height=535,
@@ -146,9 +147,9 @@ class MyNotes(ctk.CTkFrame):
             scrollbar_button_color="orange",
             scrollbar_button_hover_color="yellow",
         )
-        Sfr_notes.grid(row=0, column=0, pady=(122, 0), sticky="s")
-        Sfr_notes.grid_columnconfigure(0, weight=1)
-        Sfr_notes.grid_rowconfigure(0, weight=1)
+        self.Sfr_notes.grid(row=0, column=0, pady=(122, 0), sticky="s")
+        self.Sfr_notes.grid_columnconfigure(0, weight=1)
+        self.Sfr_notes.grid_rowconfigure(0, weight=1)
 
         search_bar = ctk.CTkEntry(
             self,
@@ -169,10 +170,6 @@ class MyNotes(ctk.CTkFrame):
             corner_radius=5,
         )
         search_symbol.grid(row=0, column=0, sticky="nw", pady=70, padx=(20, 0))
-
-        # PUXA TODAS AS NOTAS JÁ REGISTRADAS NO BANCO DE DADOS EM FORMA DE LISTA (CADA INDEX É UMA NOTA, E CADA NOTA ESTÁ DENTRO DE UMA TUPLA)
-        notes = db.notes()
-        row = 0
 
         self.viewer = ctk.CTkFrame(
                 master,
@@ -216,16 +213,32 @@ class MyNotes(ctk.CTkFrame):
         )
         self.content.grid(row=0, column=0, pady=(43, 0))
 
-        for note in notes:
+        self.refresh_notes()
+
+    def view(self, nota):
+            name = (nota[1]).lower()
+
+            self.content.configure(state="normal")
+            self.note_n.configure(text=f"NOME: {(name[0:35]).title()}",)
+            self.content.delete("1.0", "end")
+            self.content.insert("1.0", nota[2])
+            self.content.configure(state="disabled", font=(nota[3], nota[4]),)
+            self.viewer.grid(row=0, column=0, sticky="nsew", padx=(107, 4), pady=10)
+    
+    def refresh_notes(self):
+        for widget in self.Sfr_notes.winfo_children():
+            widget.destroy()
+        
+        notes = db.list_notes()
+
+        for row, note in enumerate(notes):
             name = (note[1]).lower()
             data, time = (note[5]).split(" ")
             fonte = note[3]
             ID = note[0]
 
-            row += 1
-
             note_fr = ctk.CTkFrame(
-                Sfr_notes,
+                self.Sfr_notes,
                 width=500,
                 height=130,
                 fg_color="transparent",
@@ -238,16 +251,6 @@ class MyNotes(ctk.CTkFrame):
             note_fr.grid_propagate(False)
             note_fr.grid_columnconfigure(0, weight=1)
             note_fr.grid_rowconfigure(0, weight=1)
-
-            def view(nota):
-                name = (nota[1]).lower()
-
-                self.content.configure(state="normal")
-                self.note_n.configure(text=f"NOME: {(name[0:35]).title()}",)
-                self.content.delete("1.0", "end")
-                self.content.insert("1.0", nota[2])
-                self.content.configure(state="disabled", font=(nota[3], nota[4]),)
-                self.viewer.grid(row=0, column=0, sticky="nsew", padx=(107, 4), pady=10)
 
             note_name = ctk.CTkLabel(
                 note_fr,
@@ -275,7 +278,7 @@ class MyNotes(ctk.CTkFrame):
                 fg_color="blue",
                 font=("Arial", 20, "bold"),
                 hover_color="yellow",
-                command=lambda n=note: view(n),
+                command=lambda n=note: self.view(n),
             )
             view_btn.grid(row=0, column=0, sticky="sw", pady=10, padx=7)
 
@@ -290,6 +293,10 @@ class MyNotes(ctk.CTkFrame):
             )
             edit_btn.grid(row=0, column=0, sticky="se", pady=10, padx=57)
 
+            def delete_note(id, frame):
+                db.delete_note(id)
+                frame.destroy()
+
             delete_btn = ctk.CTkButton(
                 note_fr,
                 width=45,
@@ -298,6 +305,7 @@ class MyNotes(ctk.CTkFrame):
                 fg_color="red",
                 font=("Arial", 20, "bold"),
                 hover_color="#9C0000",
+                command=lambda id = ID, frame = note_fr: delete_note(id, frame)
             )
             delete_btn.grid(row=0, column=0, sticky="se", pady=10, padx=7)
 
@@ -384,7 +392,7 @@ class CreateNotes(BaseFrame):
 
             # SE A CONDIÇÃO FOR VERDADEIRA, RETORNA UM NOME ENUMERADO SEQUENCIALMENTE DE ACORDO COM A QUANTIDADE DE NOTAS JÁ CRIADAS PELO USUÁRIO
             if not name_of_note:
-                notes = db.notes()
+                notes = db.list_notes()
                 q_notes = len(notes)
                 name_of_note = f"Nota #{q_notes + 1}"
 
@@ -480,6 +488,9 @@ class CreateNotes(BaseFrame):
                 "data": data_time,
             }
             db.save_note(note)
+
+            app = cast(App, self.winfo_toplevel())
+            app.pages['home'].mynotes.refresh_notes()
 
             self.editor.grid_remove()
             self.btn.grid()

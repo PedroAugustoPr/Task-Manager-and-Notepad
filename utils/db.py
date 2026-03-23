@@ -22,7 +22,7 @@ class Database:
             """
             )
 
-    def notes(self):
+    def list_notes(self):
         with sql.connect(DB_PATH) as conn:
             cur = conn.cursor()
             cur.execute("SELECT * FROM notes")
@@ -34,9 +34,20 @@ class Database:
             cur = conn.cursor()
             cur.execute(
                 "INSERT INTO notes (name, content, font, size, created_at) VALUES (?, ?, ?, ?, ?)",
-                (note["nome"], note["texto"], note["fonte"], note["tamanho"], note["data"]),
+                (
+                    note["nome"],
+                    note["texto"],
+                    note["fonte"],
+                    note["tamanho"],
+                    note["data"],
+                ),
             )
             conn.commit()
+
+    def delete_note(self, ID):
+        with sql.connect(DB_PATH) as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM notes WHERE id = ?", (ID,))
 
 
 db = Database()
