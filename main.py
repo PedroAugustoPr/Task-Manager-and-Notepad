@@ -3,7 +3,6 @@ from utils.db import *
 from datetime import datetime
 from typing import cast
 
-
 ctk.set_appearance_mode("dark")
 
 
@@ -172,14 +171,14 @@ class MyNotes(ctk.CTkFrame):
         search_symbol.grid(row=0, column=0, sticky="nw", pady=70, padx=(20, 0))
 
         self.viewer = ctk.CTkFrame(
-                master,
-                width=600,
-                height=700,
-                corner_radius=15,
-                border_width=2,
-                border_color="white",
-                fg_color="transparent",
-            )
+            master,
+            width=600,
+            height=700,
+            corner_radius=15,
+            border_width=2,
+            border_color="white",
+            fg_color="transparent",
+        )
         self.viewer.grid_propagate(False)
         self.viewer.grid_columnconfigure(0, weight=1)
         self.viewer.grid_rowconfigure(0, weight=1)
@@ -216,19 +215,43 @@ class MyNotes(ctk.CTkFrame):
         self.refresh_notes()
 
     def view(self, nota):
-            name = (nota[1]).lower()
+        name = (nota[1]).lower()
 
-            self.content.configure(state="normal")
-            self.note_n.configure(text=f"NOME: {(name[0:35]).title()}",)
-            self.content.delete("1.0", "end")
-            self.content.insert("1.0", nota[2])
-            self.content.configure(state="disabled", font=(nota[3], nota[4]),)
-            self.viewer.grid(row=0, column=0, sticky="nsew", padx=(107, 4), pady=10)
-    
+        self.content.configure(state="normal")
+        self.note_n.configure(
+            text=f"NOME: {(name[0:35]).title()}",
+        )
+        self.content.delete("1.0", "end")
+        self.content.insert("1.0", nota[2])
+        self.content.configure(
+            state="disabled",
+            font=(nota[3], nota[4]),
+        )
+        self.viewer.grid(row=0, column=0, sticky="nsew", padx=(107, 4), pady=10)
+
+    def edit_note(self, note, id):
+        app = cast(App, self.winfo_toplevel())
+        page = app.pages["notes"]
+        page.editing_mode = True
+
+        app.change_page("notes")
+        page.create_btn.grid_remove()
+        page.editor.grid()
+        page.editable_name.configure(placeholder_text=note[1])
+
+        write = page.write
+
+        write.delete("1.0", "end")
+        write.insert("1.0", note[2])
+        write.configure(font=(note[3], note[4]))
+        page.select_size.set(str(note[4]))
+
+        page.id = id
+
     def refresh_notes(self):
         for widget in self.Sfr_notes.winfo_children():
             widget.destroy()
-        
+
         notes = db.list_notes()
 
         for row, note in enumerate(notes):
@@ -290,12 +313,14 @@ class MyNotes(ctk.CTkFrame):
                 fg_color="orange",
                 font=("Arial", 20, "bold"),
                 hover_color="yellow",
+                command=lambda nota=note, id=ID: self.edit_note(nota, id),
             )
             edit_btn.grid(row=0, column=0, sticky="se", pady=10, padx=57)
 
             def delete_note(id, frame):
                 db.delete_note(id)
                 frame.destroy()
+                self.viewer.grid_remove()
 
             delete_btn = ctk.CTkButton(
                 note_fr,
@@ -305,7 +330,7 @@ class MyNotes(ctk.CTkFrame):
                 fg_color="red",
                 font=("Arial", 20, "bold"),
                 hover_color="#9C0000",
-                command=lambda id = ID, frame = note_fr: delete_note(id, frame)
+                command=lambda id=ID, frame=note_fr: delete_note(id, frame),
             )
             delete_btn.grid(row=0, column=0, sticky="se", pady=10, padx=7)
 
@@ -336,7 +361,7 @@ class CreateNotes(BaseFrame):
         self.grid_rowconfigure(0, weight=1)
 
         # BUTTONS : BOTÃO RESPONSÁVEL POR INICIALIZAR O PROCESSO DE CRIAÇÃO DE UMA NOVA NOTA
-        self.btn = ctk.CTkButton(
+        self.create_btn = ctk.CTkButton(
             self,
             width=100,
             height=50,
@@ -345,11 +370,17 @@ class CreateNotes(BaseFrame):
             hover_color="yellow",
             command=lambda: self.note_name(),
         )
-        self.btn.grid(row=0, column=0)
+        self.create_btn.grid(row=0, column=0)
+
+        self.editing_mode = False
+        self.note = {}
+        self.notepad()
+        self.editor.grid_remove()
+        self.id = None
 
     def note_name(self):
         # FRAMES : FRAME ONDE SERÁ PERGUNTADO O NOME DA NOTA
-        self.camp = ctk.CTkFrame(
+        self.camp_fr = ctk.CTkFrame(
             self,
             width=500,
             height=150,
@@ -358,65 +389,60 @@ class CreateNotes(BaseFrame):
             border_color="yellow",
             corner_radius=15,
         )
-        self.camp.grid(row=0, column=0)
-        self.camp.grid_propagate(False)
+        self.camp_fr.grid(row=0, column=0)
+        self.camp_fr.grid_propagate(False)
 
         for row in range(1):
-            self.camp.grid_rowconfigure(row, weight=1)
+            self.camp_fr.grid_rowconfigure(row, weight=1)
 
-        self.camp.grid_columnconfigure(0, weight=1)
+        self.camp_fr.grid_columnconfigure(0, weight=1)
 
         # ENTRADA DE TEXTO ONDE O USUÁRIO DEVE INSERIR O NOME DA NOVA NOTA
-        self.name = ctk.CTkEntry(
-            self.camp, width=480, height=50, placeholder_text="Nome do Arquivo"
+        self.entry_name = ctk.CTkEntry(
+            self.camp_fr, width=480, height=50, placeholder_text="Nome do Arquivo"
         )
-        self.name.grid(row=0, column=0)
+        self.entry_name.grid(row=0, column=0)
 
         # BUTTONS : CANCELA A CRIAÇÃO DE UMA NOVA NOTA E VOLTA PARA A "TELA" ANTERIOR
         self.cancel = ctk.CTkButton(
-            self.camp,
+            self.camp_fr,
             width=235,
             height=50,
             text="Cancelar",
             fg_color="red",
             font=("Arial", 20, "bold"),
             hover_color="yellow",
-            command=lambda: self.camp.grid_remove(),
+            command=lambda: self.camp_fr.grid_remove(),
         )
         self.cancel.grid(row=1, column=0, sticky="ws", pady=15, padx=10)
 
-        # FUNCTIONS : VERIFICA SE O USUÁRIO DIGITOU O NOME DA NOTA OU NÃO
-        def check_name():
-            global name_of_note
-            name_of_note = (self.name.get()).strip()
-
-            # SE A CONDIÇÃO FOR VERDADEIRA, RETORNA UM NOME ENUMERADO SEQUENCIALMENTE DE ACORDO COM A QUANTIDADE DE NOTAS JÁ CRIADAS PELO USUÁRIO
-            if not name_of_note:
-                notes = db.list_notes()
-                q_notes = len(notes)
-                name_of_note = f"Nota #{q_notes + 1}"
-
-            self.camp.grid_remove()
-            self.notepad()
-
-            return name_of_note
-
         # BUTTONS : PROSSEGUIR PARA A FUNÇÃO NOTEPAD?
         self.proceed = ctk.CTkButton(
-            self.camp,
+            self.camp_fr,
             width=235,
             height=50,
             text="Prosseguir",
             fg_color="orange",
             font=("Arial", 20, "bold"),
             hover_color="yellow",
-            command=lambda: check_name(),
+            command=lambda: self.check_name(),
         )
         self.proceed.grid(row=1, column=0, sticky="es", pady=15, padx=10)
 
-    def notepad(self):
-        self.btn.grid_remove()
+    # FUNCTIONS : VERIFICA SE O USUÁRIO DIGITOU O NOME DA NOTA OU NÃO
+    def check_name(self):
+        self.current_note_name = (self.entry_name.get()).strip()
 
+        if not self.current_note_name:
+            notes = db.list_notes()
+            q_notes = len(notes)
+            self.current_note_name = f"Nota #{q_notes + 1}"
+
+        self.camp_fr.grid_remove()
+        self.editor.grid()
+        self.create_btn.grid_remove()
+
+    def notepad(self):
         # FRAMES : FRAME RESPONSÁVEL POR ARMAZENAR TODOS OS WIDGETS ABAIXO
         self.editor = ctk.CTkFrame(
             self,
@@ -460,7 +486,7 @@ class CreateNotes(BaseFrame):
         )
         self.clear_btn.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 110))
 
-        # BUTTONS : SALVAR A NOTA E VOLTAR PARA A ARÉA ANTERIOR
+        # BUTTONS : SALVAR A NOTA E VOLTAR PARA A ÁREA ANTERIOR
         self.save_btn = ctk.CTkButton(
             self.editor,
             width=80,
@@ -468,39 +494,51 @@ class CreateNotes(BaseFrame):
             text="Salvar 📃",
             fg_color="blue",
             hover_color="orange",
-            command=lambda: save(),
+            command=lambda: save_note(),
         )
         self.save_btn.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 20))
 
-        # FUNCTIONS : SALVAR A NOTA CRIADA PELO USUÁRIO NO BANCO DE DADOS
-        def save():
-            # PEGA A DATA E O HORÁRIO ATUAL E ARMAZENA COMO STRING
+        def save_note():
             now = datetime.now()
             data_time = now.strftime("%d/%m/%Y %H:%M")
 
             font = self.write.cget("font")
-
-            note = {
-                "nome": name_of_note,
+            
+            if not hasattr(self, "current_note_name"):
+                self.note_name()
+                self.camp_fr.grid_remove()
+                self.check_name()
+            
+            self.note = {
+                "nome": self.current_note_name,
                 "texto": self.write.get("1.0", "end-1c"),
                 "fonte": str(font[0]),
                 "tamanho": int(font[1]),
                 "data": data_time,
             }
-            db.save_note(note)
+
+            if self.editing_mode == False:
+                db.save_note(self.note)
+            else:
+                self.note.pop("data")
+                db.edit_note(self.note, self.id)
+                self.editing_mode = False
+
+                # FINAL
+                self.write.delete("1.0", "end")
+                self.editable_name.configure(placeholder_text="")
+                self.id = None
 
             app = cast(App, self.winfo_toplevel())
-            app.pages['home'].mynotes.refresh_notes()
+            app.pages["home"].mynotes.refresh_notes()
 
             self.editor.grid_remove()
-            self.btn.grid()
+            self.create_btn.grid()
 
         # BUTTONS : MODIFICAR A FONTE E O TAMANHO
         def change_font_size(value):
+            font = self.write.cget("font")
             self.write.configure(font=(str(font[0]), int(value)))
-
-        global font
-        font = self.write.cget("font")
 
         # MENU RESPONSÁVEL POR PROVER A SELEÇÃO DO TAMANHO DA FONTE
         self.select_size = ctk.CTkOptionMenu(
@@ -535,8 +573,19 @@ class CreateNotes(BaseFrame):
             text_color="white",
             command=change_font_size,
         )
-        self.select_size.set("14")
+        font = self.write.cget("font")
+        self.select_size.set(font[1])
         self.select_size.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 200))
+
+        self.editable_name = ctk.CTkEntry(
+            self.editor,
+            width=180,
+            height=30,
+            fg_color="transparent",
+        )
+        self.editable_name.grid(
+            row=0, column=0, sticky="nw", pady=(10, 0), padx=(103, 0)
+        )
 
 
 class App(ctk.CTk):

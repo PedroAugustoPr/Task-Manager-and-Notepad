@@ -1,7 +1,6 @@
 import sqlite3 as sql
 from pathlib import Path
 
-
 DB_PATH = Path(__file__).resolve().parent / "notas.db"
 
 
@@ -9,8 +8,7 @@ class Database:
     def __init__(self):
         with sql.connect(DB_PATH) as conn:
             cur = conn.cursor()
-            cur.execute(
-                """
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS notes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -19,8 +17,7 @@ class Database:
                 size INTEGER NOT NULL,
                 created_at TEXT NOT NULL
             )
-            """
-            )
+            """)
 
     def list_notes(self):
         with sql.connect(DB_PATH) as conn:
@@ -44,10 +41,32 @@ class Database:
             )
             conn.commit()
 
-    def delete_note(self, ID):
+    def edit_note(self, note, id):
         with sql.connect(DB_PATH) as conn:
             cur = conn.cursor()
-            cur.execute("DELETE FROM notes WHERE id = ?", (ID,))
+            cur.execute(
+                "UPDATE notes SET name = ?, content = ?, font = ?, size = ? WHERE id = ?",
+                (
+                    note["nome"],
+                    note["texto"],
+                    note["fonte"],
+                    note["tamanho"],
+                    id,
+                ),
+            )
+            conn.commit()
 
+    def delete_note(self, id):
+        with sql.connect(DB_PATH) as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM notes WHERE id = ?", (id,))
+            conn.commit()
+    
+    def search_name(self, id):
+        with sql.connect(DB_PATH) as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT name FROM notes WHERE id = ?", (id,))
+            name = cur.fetchone()
+            return name[0]
 
 db = Database()
