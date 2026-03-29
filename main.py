@@ -159,17 +159,35 @@ class MyNotes(ctk.CTkFrame):
             corner_radius=15,
         )
         search_bar.grid(row=0, column=0, sticky="n", pady=70, padx=(45, 0))
+        
+        self.notes_list = None
+        
+        def search_note(event=None):
+            note_name = search_bar.get().lower()
+            notes = db.list_notes()
+            finded_notes = []
+            
+            for note in notes:
+                name = note[1].lower()
+                if name.count(str(note_name)) > 0:
+                    finded_notes.append(note)
+            
+            self.notes_list = finded_notes
+            self.refresh_notes()
+        
+        search_bar.bind("<Return>", search_note)
 
-        search_symbol = ctk.CTkLabel(
+        searchS_btn = ctk.CTkButton(
             self,
             width=40,
             height=40,
             text="🔍️",
             font=("Arial", 25),
             fg_color="orange",
-            corner_radius=5,
+            hover_color="yellow",
+            command=search_note,
         )
-        search_symbol.grid(row=0, column=0, sticky="nw", pady=70, padx=(20, 0))
+        searchS_btn.grid(row=0, column=0, sticky="nw", pady=70, padx=(20, 0))
 
         self.viewer = ctk.CTkFrame(
             master,
@@ -212,7 +230,7 @@ class MyNotes(ctk.CTkFrame):
             corner_radius=15,
         )
         self.content.grid(row=0, column=0, pady=(43, 0))
-
+        
         self.refresh_notes()
 
     def view(self, nota):
@@ -253,13 +271,13 @@ class MyNotes(ctk.CTkFrame):
     def refresh_notes(self):
         for widget in self.Sfr_notes.winfo_children():
             widget.destroy()
+        
+        if self.notes_list == None:
+            self.notes_list = db.list_notes()
 
-        notes = db.list_notes()
-
-        for row, note in enumerate(notes):
+        for row, note in enumerate(self.notes_list):
             name = (note[1]).lower()
             data, time = (note[5]).split(" ")
-            fonte = note[3]
             ID = note[0]
 
             note_fr = ctk.CTkFrame(
@@ -290,8 +308,8 @@ class MyNotes(ctk.CTkFrame):
                 note_fr,
                 width=100,
                 height=30,
-                text=f'ID: {ID} | FONTE: "{fonte}" | DATA DA CRIAÇÃO: {data} ás {time}',
-                font=("Arial", 14, "bold"),
+                text=f"ID: {ID} | DATA DA CRIAÇÃO: {data} ás {time}",
+                font=("Arial", 16),
             )
             info.grid(row=0, column=0, sticky="w", padx=10, pady=(0, 25))
 
@@ -335,6 +353,9 @@ class MyNotes(ctk.CTkFrame):
                 command=lambda id=ID, frame=note_fr: delete_note(id, frame),
             )
             delete_btn.grid(row=0, column=0, sticky="se", pady=10, padx=7)
+        
+        # !!! ISSO TÁ FORA DO LOOP ACIMA !!!
+        self.notes_list = None
 
 
 class HomePage(BaseFrame):
@@ -589,7 +610,7 @@ class CreateNotes(BaseFrame):
                 self.write.configure(font=(str(value), int(font[1])))
             except Exception as e:
                 self.write.configure(font=(str(font[0]), int(font[1])))
-                print(f'Ocorreu um erro inesperado: {e}')
+                print(f"Ocorreu um erro inesperado: {e}")
 
         self.select_font = ctk.CTkOptionMenu(
             self.editor,
@@ -623,7 +644,7 @@ class CreateNotes(BaseFrame):
                 "Courier New",
                 "DejaVu Sans Mono",
                 "Liberation Mono",
-                "Courier"
+                "Courier",
             ],
             fg_color="#3a2f00",
             button_color="#ffb300",
@@ -686,7 +707,7 @@ class App(ctk.CTk):
 
         self.buttons = {
             "home_button": self.sidebar.create_button(
-                "🏠︎", 0, 33, command=lambda: self.change_page("home")
+                "🏠", 0, 33, command=lambda: self.change_page("home")
             ),
             "notes_button": self.sidebar.create_button(
                 "📝", 1, command=lambda: self.change_page("notes")

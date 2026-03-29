@@ -62,11 +62,11 @@ class Database:
             cur.execute("DELETE FROM notes WHERE id = ?", (id,))
             conn.commit()
     
-    def search_name(self, id):
-        with sql.connect(DB_PATH) as conn:
-            cur = conn.cursor()
-            cur.execute("SELECT name FROM notes WHERE id = ?", (id,))
-            name = cur.fetchone()
-            return name[0]
+    # def search_by_name(self, name):
+    #     with sql.connect(DB_PATH) as conn:
+    #         cur = conn.cursor()
+    #         cur.execute("SELECT FROM notes WHERE name = ?", (name,))
+    #         note = cur.fetchone()
+    #         return note
 
 db = Database()
