@@ -2,6 +2,7 @@ import customtkinter as ctk
 from utils.db import *
 from datetime import datetime
 from typing import cast
+import tkinter.font as tkfont
 
 ctk.set_appearance_mode("dark")
 
@@ -237,11 +238,12 @@ class MyNotes(ctk.CTkFrame):
         app.change_page("notes")
         page.create_btn.grid_remove()
         page.editor.grid()
-        page.editable_name.configure(placeholder_text=note[1])
+        page.editable_name.delete(0, "end")
+        page.editable_name.insert(0, note[1])
 
         write = page.write
 
-        write.delete("1.0", "end")
+        write.delete("1.0", "end-1c")
         write.insert("1.0", note[2])
         write.configure(font=(note[3], note[4]))
         page.select_size.set(str(note[4]))
@@ -339,8 +341,7 @@ class HomePage(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        for column in range(1):
-            self.grid_columnconfigure(column, weight=1)
+        self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.mytasks = MyTasks(self)
@@ -354,7 +355,7 @@ class CreateNotes(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.grid(row=0, column=0, sticky="nsew", pady=10, padx=10)
+        self.grid(row=0, column=0, sticky="nsew", pady=10, padx=8)
         self.configure(border_color="white")
 
         self.grid_columnconfigure(0, weight=1)
@@ -429,14 +430,17 @@ class CreateNotes(BaseFrame):
         )
         self.proceed.grid(row=1, column=0, sticky="es", pady=15, padx=10)
 
-    # FUNCTIONS : VERIFICA SE O USUÁRIO DIGITOU O NOME DA NOTA OU NÃO
     def check_name(self):
-        self.current_note_name = (self.entry_name.get()).strip()
+        self.n_name = (self.entry_name.get()).strip()
 
-        if not self.current_note_name:
+        self.select_size.set("14")
+        self.editable_name.delete(0, "end")
+        if not self.n_name:
             notes = db.list_notes()
             q_notes = len(notes)
-            self.current_note_name = f"Nota #{q_notes + 1}"
+            self.editable_name.insert(0, f"Nota #{q_notes + 1}")
+        else:
+            self.editable_name.insert(0, self.n_name)
 
         self.camp_fr.grid_remove()
         self.editor.grid()
@@ -474,6 +478,9 @@ class CreateNotes(BaseFrame):
         )
         self.write.grid(row=0, column=0, padx=(85, 0))
 
+        def clear_write():
+            self.write.delete("1.0", "end")
+
         # BUTTONS : LIMPAR A CAIXA DE TEXTO POR COMPLETO
         self.clear_btn = ctk.CTkButton(
             self.editor,
@@ -482,7 +489,7 @@ class CreateNotes(BaseFrame):
             text="Clear 🗑️",
             fg_color="red",
             hover_color="#9C0000",
-            command=lambda: self.write.delete("1.0", "end"),
+            command=clear_write,
         )
         self.clear_btn.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 110))
 
@@ -503,14 +510,9 @@ class CreateNotes(BaseFrame):
             data_time = now.strftime("%d/%m/%Y %H:%M")
 
             font = self.write.cget("font")
-            
-            if not hasattr(self, "current_note_name"):
-                self.note_name()
-                self.camp_fr.grid_remove()
-                self.check_name()
-            
+
             self.note = {
-                "nome": self.current_note_name,
+                "nome": self.editable_name.get().strip(),
                 "texto": self.write.get("1.0", "end-1c"),
                 "fonte": str(font[0]),
                 "tamanho": int(font[1]),
@@ -523,11 +525,15 @@ class CreateNotes(BaseFrame):
                 self.note.pop("data")
                 db.edit_note(self.note, self.id)
                 self.editing_mode = False
-
                 # FINAL
-                self.write.delete("1.0", "end")
-                self.editable_name.configure(placeholder_text="")
                 self.id = None
+
+            # APAGAR O EDITABLE_NAME
+            self.editable_name.delete(0, "end")
+            # REDEFINIR O SELECT_SIZE E O WRITE
+            self.select_size.set("14")
+            self.write.configure(font=("Arial", 14))
+            clear_write()
 
             app = cast(App, self.winfo_toplevel())
             app.pages["home"].mynotes.refresh_notes()
@@ -576,6 +582,57 @@ class CreateNotes(BaseFrame):
         font = self.write.cget("font")
         self.select_size.set(font[1])
         self.select_size.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 200))
+
+        def change_font(value):
+            font = self.write.cget("font")
+            try:
+                self.write.configure(font=(str(value), int(font[1])))
+            except Exception as e:
+                self.write.configure(font=(str(font[0]), int(font[1])))
+                print(f'Ocorreu um erro inesperado: {e}')
+
+        self.select_font = ctk.CTkOptionMenu(
+            self.editor,
+            width=150,
+            height=30,
+            values=[
+                "Segoe UI",
+                "Arial",
+                "DejaVu Sans",
+                "Liberation Sans",
+                "Noto Sans",
+                "Helvetica",
+                "Verdana",
+                "Tahoma",
+                "Trebuchet MS",
+                "Ubuntu",
+                "Cantarell",
+                "FreeSans",
+                "Nimbus Sans",
+                "Times New Roman",
+                "DejaVu Serif",
+                "Liberation Serif",
+                "Noto Serif",
+                "Georgia",
+                "Cambria",
+                "Palatino Linotype",
+                "Book Antiqua",
+                "FreeSerif",
+                "Nimbus Roman",
+                "Consolas",
+                "Courier New",
+                "DejaVu Sans Mono",
+                "Liberation Mono",
+                "Courier"
+            ],
+            fg_color="#3a2f00",
+            button_color="#ffb300",
+            button_hover_color="#ffc107",
+            text_color="white",
+            command=change_font,
+        )
+        self.select_font.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 290))
+        self.select_font.set("Arial")
 
         self.editable_name = ctk.CTkEntry(
             self.editor,
