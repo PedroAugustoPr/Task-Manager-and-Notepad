@@ -6,6 +6,21 @@ import tkinter.font as tkfont
 
 ctk.set_appearance_mode("dark")
 
+COLOR_TRANSPARENT = "transparent"
+COLOR_OBSIDIAN_BLACK = "#0B0F14"
+COLOR_GRAPHITE_BLACK = "#131922"
+COLOR_CHARCOAL_GRAY = "#1A2230"
+COLOR_SLATE_GRAY = "#222C3D"
+COLOR_STEEL_GRAY = "#364153"
+COLOR_SILVER_GRAY = "#8D97A6"
+COLOR_PEARL_WHITE = "#F3F6FB"
+COLOR_CHAMPAGNE_GOLD = "#C6A66B"
+COLOR_ANTIQUE_GOLD = "#D9BB86"
+COLOR_SAPPHIRE_BLUE = "#3E5F87"
+COLOR_COBALT_BLUE = "#4F78A8"
+COLOR_WINE_RED = "#7B3541"
+COLOR_RUBY_RED = "#99505C"
+
 
 class BaseFrame(ctk.CTkFrame):
     def __init__(self, master):
@@ -15,8 +30,8 @@ class BaseFrame(ctk.CTkFrame):
             height=700,
             corner_radius=15,
             border_width=2,
-            border_color="yellow",
-            fg_color="transparent",
+            border_color=COLOR_STEEL_GRAY,
+            fg_color=COLOR_GRAPHITE_BLACK,
         )
         self.grid_propagate(False)
 
@@ -29,7 +44,8 @@ class SideBar(ctk.CTkFrame):
             height=685,
             corner_radius=15,
             border_width=2,
-            border_color="yellow",
+            border_color=COLOR_STEEL_GRAY,
+            fg_color=COLOR_GRAPHITE_BLACK,
         )
         for row in range(0, 4):
             self.grid_rowconfigure(row, weight=1)
@@ -44,10 +60,11 @@ class SideBar(ctk.CTkFrame):
             height=80,
             corner_radius=15,
             text=text,
-            fg_color="transparent",
+            fg_color=COLOR_TRANSPARENT,
             font=("Arial", font_size),
+            text_color=COLOR_PEARL_WHITE,
             command=command,
-            hover_color="orange",
+            hover_color=COLOR_CHARCOAL_GRAY,
         )
         btn.grid(row=row, column=0)
         return btn
@@ -61,13 +78,13 @@ class MyTasks(ctk.CTkFrame):
             height=650,
             corner_radius=15,
             border_width=2,
-            border_color="yellow",
-            fg_color="transparent",
+            border_color=COLOR_STEEL_GRAY,
+            fg_color=COLOR_GRAPHITE_BLACK,
         )
         self.grid_propagate(False)
 
         self.grid_columnconfigure(0, weight=1)
-        self.configure(border_color="white")
+        self.configure(border_color=COLOR_STEEL_GRAY)
 
         name_text = ctk.CTkLabel(
             self,
@@ -75,6 +92,7 @@ class MyTasks(ctk.CTkFrame):
             height=60,
             text="Tarefas",
             font=("Arial", 35, "bold"),
+            text_color=COLOR_PEARL_WHITE,
         )
         name_text.grid(row=0, column=0, sticky="n", pady=(7, 0))
 
@@ -83,10 +101,10 @@ class MyTasks(ctk.CTkFrame):
             width=510,
             height=535,
             corner_radius=15,
-            scrollbar_fg_color="transparent",
-            fg_color="#373737",
-            scrollbar_button_color="orange",
-            scrollbar_button_hover_color="yellow",
+            scrollbar_fg_color=COLOR_TRANSPARENT,
+            fg_color=COLOR_CHARCOAL_GRAY,
+            scrollbar_button_color=COLOR_CHAMPAGNE_GOLD,
+            scrollbar_button_hover_color=COLOR_ANTIQUE_GOLD,
         )
         Sfr_tasks.grid(row=0, column=0, pady=(122, 0), sticky="s")
         Sfr_tasks.grid_columnconfigure(0, weight=1)
@@ -97,6 +115,10 @@ class MyTasks(ctk.CTkFrame):
             height=40,
             placeholder_text="Pesquisar",
             corner_radius=15,
+            fg_color=COLOR_CHARCOAL_GRAY,
+            border_color=COLOR_STEEL_GRAY,
+            text_color=COLOR_PEARL_WHITE,
+            placeholder_text_color=COLOR_SILVER_GRAY,
         )
         search_bar.grid(row=0, column=0, sticky="n", pady=70, padx=(45, 0))
 
@@ -106,7 +128,8 @@ class MyTasks(ctk.CTkFrame):
             height=40,
             text="🔍️",
             font=("Arial", 25),
-            fg_color="orange",
+            text_color=COLOR_OBSIDIAN_BLACK,
+            fg_color=COLOR_CHAMPAGNE_GOLD,
             corner_radius=5,
         )
         search_symbol.grid(row=0, column=0, sticky="nw", pady=70, padx=(20, 0))
@@ -120,13 +143,13 @@ class MyNotes(ctk.CTkFrame):
             height=650,
             corner_radius=15,
             border_width=2,
-            border_color="yellow",
-            fg_color="transparent",
+            border_color=COLOR_STEEL_GRAY,
+            fg_color=COLOR_GRAPHITE_BLACK,
         )
         self.grid_propagate(False)
 
         self.grid_columnconfigure(0, weight=1)
-        self.configure(border_color="white")
+        self.configure(border_color=COLOR_STEEL_GRAY)
 
         name_text = ctk.CTkLabel(
             self,
@@ -134,6 +157,7 @@ class MyNotes(ctk.CTkFrame):
             height=60,
             text="Notas",
             font=("Arial", 35, "bold"),
+            text_color=COLOR_PEARL_WHITE,
         )
         name_text.grid(row=0, column=0, sticky="n", pady=(7, 0))
 
@@ -142,10 +166,10 @@ class MyNotes(ctk.CTkFrame):
             width=510,
             height=535,
             corner_radius=15,
-            scrollbar_fg_color="transparent",
-            fg_color="#373737",
-            scrollbar_button_color="orange",
-            scrollbar_button_hover_color="yellow",
+            scrollbar_fg_color=COLOR_TRANSPARENT,
+            fg_color=COLOR_CHARCOAL_GRAY,
+            scrollbar_button_color=COLOR_CHAMPAGNE_GOLD,
+            scrollbar_button_hover_color=COLOR_ANTIQUE_GOLD,
         )
         self.Sfr_notes.grid(row=0, column=0, pady=(122, 0), sticky="s")
         self.Sfr_notes.grid_columnconfigure(0, weight=1)
@@ -157,6 +181,10 @@ class MyNotes(ctk.CTkFrame):
             height=40,
             placeholder_text="Pesquisar",
             corner_radius=15,
+            fg_color=COLOR_CHARCOAL_GRAY,
+            border_color=COLOR_STEEL_GRAY,
+            text_color=COLOR_PEARL_WHITE,
+            placeholder_text_color=COLOR_SILVER_GRAY,
         )
         search_bar.grid(row=0, column=0, sticky="n", pady=70, padx=(45, 0))
         
@@ -183,20 +211,21 @@ class MyNotes(ctk.CTkFrame):
             height=40,
             text="🔍️",
             font=("Arial", 25),
-            fg_color="orange",
-            hover_color="yellow",
+            fg_color=COLOR_CHAMPAGNE_GOLD,
+            text_color=COLOR_OBSIDIAN_BLACK,
+            hover_color=COLOR_ANTIQUE_GOLD,
             command=search_note,
         )
         searchS_btn.grid(row=0, column=0, sticky="nw", pady=70, padx=(20, 0))
 
         self.viewer = ctk.CTkFrame(
             master,
-            width=600,
+            width=1045,
             height=700,
             corner_radius=15,
             border_width=2,
-            border_color="white",
-            fg_color="transparent",
+            border_color=COLOR_STEEL_GRAY,
+            fg_color=COLOR_GRAPHITE_BLACK,
         )
         self.viewer.grid_propagate(False)
         self.viewer.grid_columnconfigure(0, weight=1)
@@ -206,10 +235,11 @@ class MyNotes(ctk.CTkFrame):
             self.viewer,
             width=40,
             height=40,
-            fg_color="red",
+            fg_color=COLOR_WINE_RED,
             text="X",
             font=("Arial", 17, "bold"),
-            hover_color="#9C0000",
+            text_color=COLOR_PEARL_WHITE,
+            hover_color=COLOR_RUBY_RED,
             command=lambda: self.viewer.grid_remove(),
         )
         self.x_btn.grid(row=0, column=0, sticky="ne", pady=10, padx=10)
@@ -219,15 +249,21 @@ class MyNotes(ctk.CTkFrame):
             width=100,
             height=30,
             font=("Arial", 20, "bold"),
+            text_color=COLOR_PEARL_WHITE,
         )
         self.note_n.grid(row=0, column=0, sticky="nw", pady=20, padx=20)
 
         self.content = ctk.CTkTextbox(
             self.viewer,
-            width=560,
+            width=1005,
             height=630,
             state="normal",
             corner_radius=15,
+            fg_color=COLOR_CHARCOAL_GRAY,
+            border_color=COLOR_STEEL_GRAY,
+            text_color=COLOR_PEARL_WHITE,
+            scrollbar_button_color=COLOR_CHAMPAGNE_GOLD,
+            scrollbar_button_hover_color=COLOR_ANTIQUE_GOLD,
         )
         self.content.grid(row=0, column=0, pady=(43, 0))
         
@@ -246,7 +282,14 @@ class MyNotes(ctk.CTkFrame):
             state="disabled",
             font=(nota[3], nota[4]),
         )
-        self.viewer.grid(row=0, column=0, sticky="nsew", padx=(107, 4), pady=10)
+        self.viewer.grid(
+            row=0,
+            column=0,
+            columnspan=2,
+            sticky="nsew",
+            padx=(107, 8),
+            pady=10,
+        )
 
     def edit_note(self, note, id):
         app = cast(App, self.winfo_toplevel())
@@ -284,10 +327,10 @@ class MyNotes(ctk.CTkFrame):
                 self.Sfr_notes,
                 width=500,
                 height=130,
-                fg_color="transparent",
+                fg_color=COLOR_CHARCOAL_GRAY,
                 corner_radius=15,
                 border_width=2,
-                border_color="orange",
+                border_color=COLOR_STEEL_GRAY,
             )
             note_fr.grid(row=row, column=0, pady=5, padx=(0, 10))
 
@@ -301,6 +344,7 @@ class MyNotes(ctk.CTkFrame):
                 height=30,
                 text=f"NOME: {(name[0:35]).title()}",
                 font=("Arial", 20, "bold"),
+                text_color=COLOR_PEARL_WHITE,
             )
             note_name.grid(row=0, column=0, sticky="nw", pady=10, padx=10)
 
@@ -310,6 +354,7 @@ class MyNotes(ctk.CTkFrame):
                 height=30,
                 text=f"ID: {ID} | DATA DA CRIAÇÃO: {data} ás {time}",
                 font=("Arial", 16),
+                text_color=COLOR_SILVER_GRAY,
             )
             info.grid(row=0, column=0, sticky="w", padx=10, pady=(0, 25))
 
@@ -318,9 +363,10 @@ class MyNotes(ctk.CTkFrame):
                 width=215,
                 height=45,
                 text="Visualizar",
-                fg_color="blue",
+                fg_color=COLOR_SAPPHIRE_BLUE,
                 font=("Arial", 20, "bold"),
-                hover_color="yellow",
+                text_color=COLOR_PEARL_WHITE,
+                hover_color=COLOR_COBALT_BLUE,
                 command=lambda n=note: self.view(n),
             )
             view_btn.grid(row=0, column=0, sticky="sw", pady=10, padx=7)
@@ -330,9 +376,10 @@ class MyNotes(ctk.CTkFrame):
                 width=215,
                 height=45,
                 text="Editar",
-                fg_color="orange",
+                fg_color=COLOR_CHAMPAGNE_GOLD,
                 font=("Arial", 20, "bold"),
-                hover_color="yellow",
+                text_color=COLOR_OBSIDIAN_BLACK,
+                hover_color=COLOR_ANTIQUE_GOLD,
                 command=lambda nota=note, id=ID: self.edit_note(nota, id),
             )
             edit_btn.grid(row=0, column=0, sticky="se", pady=10, padx=57)
@@ -347,9 +394,10 @@ class MyNotes(ctk.CTkFrame):
                 width=45,
                 height=45,
                 text="🗑️",
-                fg_color="red",
+                fg_color=COLOR_WINE_RED,
                 font=("Arial", 20, "bold"),
-                hover_color="#9C0000",
+                text_color=COLOR_PEARL_WHITE,
+                hover_color=COLOR_RUBY_RED,
                 command=lambda id=ID, frame=note_fr: delete_note(id, frame),
             )
             delete_btn.grid(row=0, column=0, sticky="se", pady=10, padx=7)
@@ -363,6 +411,7 @@ class HomePage(BaseFrame):
         super().__init__(master)
 
         self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.mytasks = MyTasks(self)
@@ -377,7 +426,7 @@ class CreateNotes(BaseFrame):
         super().__init__(master)
 
         self.grid(row=0, column=0, sticky="nsew", pady=10, padx=8)
-        self.configure(border_color="white")
+        self.configure(border_color=COLOR_STEEL_GRAY)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -388,8 +437,9 @@ class CreateNotes(BaseFrame):
             width=100,
             height=50,
             text="Criar Nota",
-            fg_color="orange",
-            hover_color="yellow",
+            fg_color=COLOR_CHAMPAGNE_GOLD,
+            text_color=COLOR_OBSIDIAN_BLACK,
+            hover_color=COLOR_ANTIQUE_GOLD,
             command=lambda: self.note_name(),
         )
         self.create_btn.grid(row=0, column=0)
@@ -406,9 +456,9 @@ class CreateNotes(BaseFrame):
             self,
             width=500,
             height=150,
-            fg_color="transparent",
+            fg_color=COLOR_GRAPHITE_BLACK,
             border_width=2,
-            border_color="yellow",
+            border_color=COLOR_STEEL_GRAY,
             corner_radius=15,
         )
         self.camp_fr.grid(row=0, column=0)
@@ -421,7 +471,14 @@ class CreateNotes(BaseFrame):
 
         # ENTRADA DE TEXTO ONDE O USUÁRIO DEVE INSERIR O NOME DA NOVA NOTA
         self.entry_name = ctk.CTkEntry(
-            self.camp_fr, width=480, height=50, placeholder_text="Nome do Arquivo"
+            self.camp_fr,
+            width=480,
+            height=50,
+            placeholder_text="Nome do Arquivo",
+            fg_color=COLOR_CHARCOAL_GRAY,
+            border_color=COLOR_STEEL_GRAY,
+            text_color=COLOR_PEARL_WHITE,
+            placeholder_text_color=COLOR_SILVER_GRAY,
         )
         self.entry_name.grid(row=0, column=0)
 
@@ -431,9 +488,10 @@ class CreateNotes(BaseFrame):
             width=235,
             height=50,
             text="Cancelar",
-            fg_color="red",
+            fg_color=COLOR_WINE_RED,
             font=("Arial", 20, "bold"),
-            hover_color="yellow",
+            text_color=COLOR_PEARL_WHITE,
+            hover_color=COLOR_RUBY_RED,
             command=lambda: self.camp_fr.grid_remove(),
         )
         self.cancel.grid(row=1, column=0, sticky="ws", pady=15, padx=10)
@@ -444,9 +502,10 @@ class CreateNotes(BaseFrame):
             width=235,
             height=50,
             text="Prosseguir",
-            fg_color="orange",
+            fg_color=COLOR_CHAMPAGNE_GOLD,
             font=("Arial", 20, "bold"),
-            hover_color="yellow",
+            text_color=COLOR_OBSIDIAN_BLACK,
+            hover_color=COLOR_ANTIQUE_GOLD,
             command=lambda: self.check_name(),
         )
         self.proceed.grid(row=1, column=0, sticky="es", pady=15, padx=10)
@@ -475,13 +534,13 @@ class CreateNotes(BaseFrame):
             height=700,
             corner_radius=15,
             border_width=2,
-            border_color="yellow",
-            fg_color="transparent",
+            border_color=COLOR_STEEL_GRAY,
+            fg_color=COLOR_GRAPHITE_BLACK,
         )
         self.editor.grid_propagate(False)
 
         self.editor.grid(row=0, column=0, sticky="nsew")
-        self.editor.configure(border_color="white")
+        self.editor.configure(border_color=COLOR_STEEL_GRAY)
 
         self.editor.grid_columnconfigure(0, weight=1)
         self.editor.grid_rowconfigure(0, weight=1)
@@ -493,8 +552,11 @@ class CreateNotes(BaseFrame):
             height=600,
             corner_radius=15,
             activate_scrollbars=True,
-            scrollbar_button_color="orange",
-            scrollbar_button_hover_color="yellow",
+            fg_color=COLOR_CHARCOAL_GRAY,
+            border_color=COLOR_STEEL_GRAY,
+            text_color=COLOR_PEARL_WHITE,
+            scrollbar_button_color=COLOR_CHAMPAGNE_GOLD,
+            scrollbar_button_hover_color=COLOR_ANTIQUE_GOLD,
             font=("Arial", 14),
         )
         self.write.grid(row=0, column=0, padx=(85, 0))
@@ -508,8 +570,9 @@ class CreateNotes(BaseFrame):
             width=80,
             height=30,
             text="Clear 🗑️",
-            fg_color="red",
-            hover_color="#9C0000",
+            fg_color=COLOR_WINE_RED,
+            text_color=COLOR_PEARL_WHITE,
+            hover_color=COLOR_RUBY_RED,
             command=clear_write,
         )
         self.clear_btn.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 110))
@@ -520,8 +583,9 @@ class CreateNotes(BaseFrame):
             width=80,
             height=30,
             text="Salvar 📃",
-            fg_color="blue",
-            hover_color="orange",
+            fg_color=COLOR_SAPPHIRE_BLUE,
+            text_color=COLOR_PEARL_WHITE,
+            hover_color=COLOR_COBALT_BLUE,
             command=lambda: save_note(),
         )
         self.save_btn.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 20))
@@ -594,10 +658,13 @@ class CreateNotes(BaseFrame):
                 "64",
                 "72",
             ],
-            fg_color="#3a2f00",
-            button_color="#ffb300",
-            button_hover_color="#ffc107",
-            text_color="white",
+            fg_color=COLOR_CHARCOAL_GRAY,
+            button_color=COLOR_CHAMPAGNE_GOLD,
+            button_hover_color=COLOR_ANTIQUE_GOLD,
+            text_color=COLOR_PEARL_WHITE,
+            dropdown_fg_color=COLOR_CHARCOAL_GRAY,
+            dropdown_hover_color=COLOR_SLATE_GRAY,
+            dropdown_text_color=COLOR_PEARL_WHITE,
             command=change_font_size,
         )
         font = self.write.cget("font")
@@ -646,10 +713,13 @@ class CreateNotes(BaseFrame):
                 "Liberation Mono",
                 "Courier",
             ],
-            fg_color="#3a2f00",
-            button_color="#ffb300",
-            button_hover_color="#ffc107",
-            text_color="white",
+            fg_color=COLOR_CHARCOAL_GRAY,
+            button_color=COLOR_CHAMPAGNE_GOLD,
+            button_hover_color=COLOR_ANTIQUE_GOLD,
+            text_color=COLOR_PEARL_WHITE,
+            dropdown_fg_color=COLOR_CHARCOAL_GRAY,
+            dropdown_hover_color=COLOR_SLATE_GRAY,
+            dropdown_text_color=COLOR_PEARL_WHITE,
             command=change_font,
         )
         self.select_font.grid(row=0, column=0, sticky="ne", pady=(10, 0), padx=(0, 290))
@@ -659,7 +729,10 @@ class CreateNotes(BaseFrame):
             self.editor,
             width=180,
             height=30,
-            fg_color="transparent",
+            fg_color=COLOR_TRANSPARENT,
+            border_color=COLOR_STEEL_GRAY,
+            text_color=COLOR_PEARL_WHITE,
+            placeholder_text_color=COLOR_SILVER_GRAY,
         )
         self.editable_name.grid(
             row=0, column=0, sticky="nw", pady=(10, 0), padx=(103, 0)
@@ -671,6 +744,7 @@ class App(ctk.CTk):
         super().__init__()
 
         self.title("")
+        self.configure(fg_color=COLOR_OBSIDIAN_BLACK)
 
         largura = 1280
         altura = 720
@@ -689,7 +763,7 @@ class App(ctk.CTk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.container = ctk.CTkFrame(self)
+        self.container = ctk.CTkFrame(self, fg_color=COLOR_OBSIDIAN_BLACK)
         self.container.grid(row=0, column=0, sticky="nsew")
         self.container.grid_columnconfigure(0, weight=1)
         self.container.grid_rowconfigure(0, weight=1)
@@ -722,9 +796,9 @@ class App(ctk.CTk):
         self.pages[page_name].tkraise()
 
         for button in self.buttons.values():
-            button.configure(fg_color="transparent")
+            button.configure(fg_color=COLOR_TRANSPARENT)
 
-        self.buttons[f"{page_name}_button"].configure(fg_color="orange")
+        self.buttons[f"{page_name}_button"].configure(fg_color=COLOR_CHAMPAGNE_GOLD)
 
 
 app = App()
