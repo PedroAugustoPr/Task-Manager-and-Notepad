@@ -26,8 +26,8 @@ class BaseFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(
             master,
-            width=1160,
-            height=700,
+            width=1140,
+            height=680,
             corner_radius=15,
             border_width=2,
             border_color=COLOR_STEEL_GRAY,
@@ -40,8 +40,8 @@ class SideBar(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(
             master,
-            width=100,
-            height=685,
+            width=1280,
+            height=720,
             corner_radius=15,
             border_width=2,
             border_color=COLOR_STEEL_GRAY,
@@ -66,7 +66,7 @@ class SideBar(ctk.CTkFrame):
             command=command,
             hover_color=COLOR_CHARCOAL_GRAY,
         )
-        btn.grid(row=row, column=0)
+        btn.grid(row=row, column=0, sticky='w', padx=10)
         return btn
 
 
@@ -139,8 +139,8 @@ class MyNotes(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(
             master,
-            width=580,
-            height=650,
+            width=540,
+            height=320,
             corner_radius=15,
             border_width=2,
             border_color=COLOR_STEEL_GRAY,
@@ -151,42 +151,31 @@ class MyNotes(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.configure(border_color=COLOR_STEEL_GRAY)
 
-        name_text = ctk.CTkLabel(
-            self,
-            width=550,
-            height=60,
-            text="Notas",
-            font=("Arial", 35, "bold"),
-            text_color=COLOR_PEARL_WHITE,
-        )
-        name_text.grid(row=0, column=0, sticky="n", pady=(7, 0))
-
         self.Sfr_notes = ctk.CTkScrollableFrame(
             self,
-            width=510,
-            height=535,
+            width=470,
+            height=185,
             corner_radius=15,
             scrollbar_fg_color=COLOR_TRANSPARENT,
             fg_color=COLOR_CHARCOAL_GRAY,
             scrollbar_button_color=COLOR_CHAMPAGNE_GOLD,
             scrollbar_button_hover_color=COLOR_ANTIQUE_GOLD,
         )
-        self.Sfr_notes.grid(row=0, column=0, pady=(122, 0), sticky="s")
+        self.Sfr_notes.grid(row=0, column=0, pady=(70, 0), sticky="s")
         self.Sfr_notes.grid_columnconfigure(0, weight=1)
         self.Sfr_notes.grid_rowconfigure(0, weight=1)
 
         search_bar = ctk.CTkEntry(
             self,
-            width=490,
+            width=437,
             height=40,
             placeholder_text="Pesquisar",
-            corner_radius=15,
             fg_color=COLOR_CHARCOAL_GRAY,
             border_color=COLOR_STEEL_GRAY,
             text_color=COLOR_PEARL_WHITE,
             placeholder_text_color=COLOR_SILVER_GRAY,
         )
-        search_bar.grid(row=0, column=0, sticky="n", pady=70, padx=(45, 0))
+        search_bar.grid(row=0, column=0, sticky="n", pady=(20, 0), padx=(64, 0))
         
         self.notes_list = None
         
@@ -207,16 +196,16 @@ class MyNotes(ctk.CTkFrame):
 
         searchS_btn = ctk.CTkButton(
             self,
-            width=40,
+            width=65,
             height=40,
-            text="🔍️",
+            text="🔍",
             font=("Arial", 25),
             fg_color=COLOR_CHAMPAGNE_GOLD,
             text_color=COLOR_OBSIDIAN_BLACK,
             hover_color=COLOR_ANTIQUE_GOLD,
             command=search_note,
         )
-        searchS_btn.grid(row=0, column=0, sticky="nw", pady=70, padx=(20, 0))
+        searchS_btn.grid(row=0, column=0, sticky="nw", pady=(20, 0), padx=(20, 0))
 
         self.viewer = ctk.CTkFrame(
             master,
@@ -360,7 +349,7 @@ class MyNotes(ctk.CTkFrame):
 
             view_btn = ctk.CTkButton(
                 note_fr,
-                width=215,
+                width=195,
                 height=45,
                 text="Visualizar",
                 fg_color=COLOR_SAPPHIRE_BLUE,
@@ -373,7 +362,7 @@ class MyNotes(ctk.CTkFrame):
 
             edit_btn = ctk.CTkButton(
                 note_fr,
-                width=215,
+                width=195,
                 height=45,
                 text="Editar",
                 fg_color=COLOR_CHAMPAGNE_GOLD,
@@ -382,7 +371,7 @@ class MyNotes(ctk.CTkFrame):
                 hover_color=COLOR_ANTIQUE_GOLD,
                 command=lambda nota=note, id=ID: self.edit_note(nota, id),
             )
-            edit_btn.grid(row=0, column=0, sticky="se", pady=10, padx=57)
+            edit_btn.grid(row=0, column=0, sticky="se", pady=10, padx=(0, 57))
 
             def delete_note(id, frame):
                 db.delete_note(id)
@@ -410,15 +399,15 @@ class HomePage(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+        for i in range(2):
+            self.grid_columnconfigure(i, weight=1)
+            self.grid_rowconfigure(i, weight=1)
 
         self.mytasks = MyTasks(self)
-        self.mytasks.grid(row=0, column=0, sticky="nsw", padx=(107, 0), pady=10)
+        self.mytasks.grid(row=0, column=0, sticky="nsw", pady=10)
 
         self.mynotes = MyNotes(self)
-        self.mynotes.grid(row=0, column=1, sticky="ens", padx=(0, 8), pady=10)
+        self.mynotes.grid(row=0, column=1, sticky="es", padx=(0, 8), pady=10)
 
 
 class CreateNotes(BaseFrame):
@@ -743,7 +732,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("")
+        self.title("Ominix")
         self.configure(fg_color=COLOR_OBSIDIAN_BLACK)
 
         largura = 1280
@@ -763,31 +752,32 @@ class App(ctk.CTk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.container = ctk.CTkFrame(self, fg_color=COLOR_OBSIDIAN_BLACK)
+        self.container = ctk.CTkFrame(self, fg_color=COLOR_OBSIDIAN_BLACK, width=1000, height=700)
         self.container.grid(row=0, column=0, sticky="nsew")
         self.container.grid_columnconfigure(0, weight=1)
         self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_propagate(False)
 
         self.pages = {
+            "side_bar": SideBar(self.container),
             "home": HomePage(self.container),
             "notes": CreateNotes(self.container),
         }
+        self.pages["side_bar"].grid(row=0, column=0, sticky="nsew")
 
         for page in self.pages:
-            self.pages[page].grid(row=0, column=0, sticky="nsew")
-
-        self.sidebar = SideBar(self)
-        self.sidebar.grid(row=0, column=0, sticky="nsw")
+            self.pages[page].grid(row=0, column=0, sticky="e", pady=10, padx=10)
+            
 
         self.buttons = {
-            "home_button": self.sidebar.create_button(
+            "home_button": self.pages["side_bar"].create_button(
                 "🏠", 0, 33, command=lambda: self.change_page("home")
             ),
-            "notes_button": self.sidebar.create_button(
+            "notes_button": self.pages["side_bar"].create_button(
                 "📝", 1, command=lambda: self.change_page("notes")
             ),
-            "tasks_button": self.sidebar.create_button("📋", 2, 33),
-            "settings_button": self.sidebar.create_button("⚙️", 3, 40),
+            "tasks_button": self.pages["side_bar"].create_button("📋", 2, 33),
+            "settings_button": self.pages["side_bar"].create_button("⚙️", 3, 40),
         }
 
         self.change_page("home")
